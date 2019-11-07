@@ -298,13 +298,28 @@ def resize_with_bbox(img, bbox, new_width, new_height, interp=0, letterbox=False
     Resize the image and correct the bbox accordingly.
     '''
 
+    if np.any((bbox[:, [2, 3]] > img.shape[:2])):
+        print('EXCEPTIPON1')
+        print(bbox)
+        print(img.shape)
+        print(bbox[:, [2, 3]] > img.shape[:2])
+        print(np.any((bbox[:, [2, 3]] > img.shape[:2])))
     if letterbox:
         image_padded, resize_ratio, dw, dh = letterbox_resize(img, new_width, new_height, interp)
 
         # xmin, xmax
-        bbox[:, [0, 2]] = bbox[:, [0, 2]] * resize_ratio + dw
+        bbox[:, [0, 2]] = bbox[:, [0, 2]] * resize_ratio + dh
         # ymin, ymax
-        bbox[:, [1, 3]] = bbox[:, [1, 3]] * resize_ratio + dh
+        bbox[:, [1, 3]] = bbox[:, [1, 3]] * resize_ratio + dw
+
+        if np.any((bbox[:, [2, 3]] > image_padded.shape[:2])):
+            print('EXCEPTION2')
+            print(bbox)
+            print(image_padded.shape)
+            print(bbox[:, [2, 3]] > image_padded.shape[:2])
+            print(np.any((bbox[:, [2, 3]] > image_padded.shape[:2])))
+            print(resize_ratio)
+            print([dw, dh])
 
         return image_padded, bbox
     else:
@@ -316,6 +331,13 @@ def resize_with_bbox(img, bbox, new_width, new_height, interp=0, letterbox=False
         bbox[:, [0, 2]] = bbox[:, [0, 2]] / ori_width * new_width
         # ymin, ymax
         bbox[:, [1, 3]] = bbox[:, [1, 3]] / ori_height * new_height
+
+        if np.any((bbox[:, [2, 3]] > img.shape[:2])):
+            print('EXCEPTION3')
+            print(bbox)
+            print(img.shape)
+            print(bbox[:, [2, 3]] > img.shape[:2])
+            print(np.any((bbox[:, [2, 3]] > img.shape[:2])))
 
         return img, bbox
 

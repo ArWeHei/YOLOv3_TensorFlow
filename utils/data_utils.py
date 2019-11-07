@@ -52,7 +52,7 @@ def process_box(boxes, labels, img_size, class_num, anchors):
     '''
     Generate the y_true label, i.e. the ground truth feature_maps in 3 different scales.
     params:
-        boxes: [N, 5] shape, float32 dtype. `x_min, y_min, x_max, y_mix, mixup_weight`.
+        boxes: [N, 5] shape, float32 dtype. `x_min, y_min, x_max, y_max, mixup_weight`.
         labels: [N] shape, int64 dtype.
         class_num: int64 num.
         anchors: [9, 4] shape, float32 dtype.
@@ -104,7 +104,6 @@ def process_box(boxes, labels, img_size, class_num, anchors):
         y = int(np.floor(box_centers[i, 1] / ratio))
         k = anchors_mask[feature_map_group].index(idx)
         c = labels[i]
-        # print(feature_map_group, '|', y,x,k,c)
 
         y_true[feature_map_group][y, x, k, :2] = box_centers[i]
         y_true[feature_map_group][y, x, k, 2:4] = box_sizes[i]
@@ -139,6 +138,9 @@ def parse_data(line, class_num, img_size, anchors, mode, letterbox_resize):
 
         img, boxes = mix_up(img1, img2, boxes1, boxes2)
         labels = np.concatenate((labels1, labels2))
+
+    #print(img.shape)
+    #print(boxes)
 
     if mode == 'train':
         # random color jittering
